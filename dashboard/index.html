@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VeriFundu — Segurança Bancária Angola</title>
+    <meta name="theme-color" content="#0a1628">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- ── HEADER ── -->
+    <header class="app-header">
+        <div class="brand">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#brand-grad)"/>
+                    <path d="M9 16L14 21L23 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#0066cc"/>
+                            <stop offset="100%" stop-color="#00d4ff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>VeriFundu</h1>
+                <div class="badge-secure">
+                    <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 16a1 1 0 110-2 1 1 0 010 2zm1-5h-2V7h2v6z"/></svg>
+                    Conexão Segura
+                </div>
+            </div>
+        </div>
+        <div class="angola-flag">
+            <div class="flag-top"></div>
+            <div class="flag-bottom"></div>
+        </div>
+    </header>
+
+    <!-- ── CONTENT ── -->
+    <main class="app-content">
+        <!-- Dashboard Screen -->
+        <section id="screen-home" class="screen active">
+            <div class="hero-card">
+                <h2>Verificação Nacional</h2>
+                <p>Detecte recibos falsos do BAI, BFA, BCI e Multicaixa Express em segundos.</p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-val" id="count-total">247</span>
+                        <span class="stat-label">Hoje</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-val danger" id="count-fraud">12</span>
+                        <span class="stat-label">Fraudes</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Actividade Recente</div>
+            <div id="recent-list" class="recent-list">
+                <!-- Cards injected by JS -->
+            </div>
+        </section>
+
+        <!-- Scan Screen -->
+        <section id="screen-scan" class="screen">
+            <div class="scan-area">
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-content" id="drop-content-default">
+                        <div class="scan-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7V1h-6M1 7V1h6M23 17v6h-6M1 17v6h6M12 8v8M8 12h8"/></svg>
+                        </div>
+                        <h3>Analisar Recibo</h3>
+                        <p>JPG, PNG ou PDF</p>
+                    </div>
+                    <div id="preview-container" class="preview-container hidden">
+                        <img id="image-preview" src="" alt="Thumbnail">
+                        <div class="scan-laser"></div>
+                    </div>
+                </div>
+
+                <div class="upload-controls">
+                    <label for="file-input" class="btn-primary block">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                        Carregar Comprovativo
+                    </label>
+                    <input type="file" id="file-input" accept="image/jpeg,image/png,application/pdf" hidden>
+                    <button id="btn-demo" class="btn-secondary block">Usar Exemplo Demo</button>
+                </div>
+
+                <div id="pipeline-status" class="pipeline-status hidden">
+                    <div class="stage" id="stage-preprocess"><div class="dot"></div> Processamento</div>
+                    <div class="stage" id="stage-ocr"><div class="dot"></div> Leitura OCR</div>
+                    <div class="stage" id="stage-vision"><div class="dot"></div> Análise Digital</div>
+                </div>
+
+                <div id="extraction-fields" class="extraction-fields hidden">
+                    <!-- Fields show as they are read -->
+                </div>
+            </div>
+        </section>
+
+        <!-- History Screen -->
+        <section id="screen-history" class="screen">
+            <div class="section-title">Histórico de Verificações</div>
+            <div id="history-list" class="history-list"></div>
+        </section>
+
+        <!-- Settings Screen -->
+        <section id="screen-settings" class="screen">
+            <div class="settings-group">
+                <div class="settings-item">
+                    <span>Notificações de Fraude</span>
+                    <div class="toggle active"></div>
+                </div>
+                <div class="settings-item">
+                    <span>Modo de Alta Precisão</span>
+                    <div class="toggle active"></div>
+                </div>
+            </div>
+            <div class="footer-info">
+                VeriFundu v2.1.0 · Angola
+            </div>
+        </section>
+    </main>
+
+    <!-- ── BOTTOM NAVIGATION ── -->
+    <nav class="app-nav">
+        <button class="nav-item active" data-screen="home">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+            <span>Início</span>
+        </button>
+        <button class="nav-item fab" data-screen="scan">
+            <div class="fab-bg">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 7V1h-6M1 7V1h6M23 17v6h-6M1 17v6h6M12 8v8M8 12h8"/></svg>
+            </div>
+            <span class="fab-label">SCAN</span>
+        </button>
+        <button class="nav-item" data-screen="history">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            <span>Histórico</span>
+        </button>
+        <button class="nav-item" data-screen="settings">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <span>Definições</span>
+        </button>
+    </nav>
+
+    <!-- ── OVERLAYS ── -->
+    <div id="verdict-overlay" class="verdict-overlay hidden">
+        <div class="verdict-content">
+            <div id="verdict-icon"></div>
+            <h2 id="verdict-title">AUTÊNTICO</h2>
+            <p id="verdict-subtitle">Este recibo é válido e original.</p>
+            <div class="verdict-details" id="verdict-details"></div>
+            <button class="btn-primary block" id="btn-close-verdict">Continuar</button>
+        </div>
+    </div>
+
+    <!-- ── SESSION TIMEOUT ── -->
+    <div id="timeout-warning" class="timeout-toast hidden">
+        Sessão expira em 30 segundos devido à inatividade.
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

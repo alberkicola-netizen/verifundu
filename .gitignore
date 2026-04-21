@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+.env
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
+.github/
+.vscode/
+infra/prometheus/data/
+infra/grafana/data/
+infra/postgres/data/
+infra/redis/data/
+infra/minio/data/
+# Avoid uploading local test images
+dashboard/temp_images/

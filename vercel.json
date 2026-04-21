@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "verifundu",
+  "builds": [
+    { "src": "dashboard/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/dashboard/$1" }
+  ]
+}
