@@ -21,40 +21,93 @@
             --orange: #ff9100;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; background: #000; color: var(--text); font-family: 'Inter', sans-serif; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background: #000; color: var(--text); font-family: 'Inter', sans-serif; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
 
+        /* ── SPECTACULAR FULL-SCREEN BACKGROUND ── */
+        .savanna-bg {
+            position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;
+            background: linear-gradient(to bottom, #0a1628 0%, #0066cc 60%, rgba(255,215,0,0.3) 100%);
+        }
+
+        /* Sunset Glow Behind Animal */
+        .sunset-glow {
+            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 300px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0) 70%);
+            z-index: 1; filter: blur(20px);
+        }
+
+        /* Subtle Stars */
+        .stars {
+            position: absolute; inset: 0; z-index: 0;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 160px 120px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat; background-size: 200px 200px; opacity: 0.4;
+        }
+
+        /* Palanca Negra Silhouette */
+        .palanca-container {
+            position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
+            width: 350px; height: 350px; z-index: 2;
+            display: flex; justify-content: center; align-items: flex-end;
+            animation: breathe 6s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: translateX(-50%) scaleY(1); transform-origin: bottom center; }
+            50% { transform: translateX(-50%) scaleY(1.02); transform-origin: bottom center; }
+        }
+        .palanca-svg { width: 100%; height: 100%; fill: #07101d; }
+
+        /* Savanna Grass Silhouette */
+        .savanna-grass {
+            position: absolute; bottom: -20px; left: 0; width: 100%; height: 15vh; z-index: 3;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1000 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,100 L0,50 Q50,70 100,40 T200,60 T350,30 T450,55 T600,20 T750,60 T900,40 L1000,60 L1000,100 Z" fill="%231a3a1a"/></svg>') no-repeat bottom center;
+            background-size: cover;
+        }
+
+        /* ── APP STRUCTURE ── */
         .app-container {
-            width: 100%; max-width: 480px; height: 100%; background: var(--bg); position: relative;
-            display: flex; flex-direction: column; overflow: hidden;
+            width: 100%; max-width: 480px; height: 100%; position: relative;
+            display: flex; flex-direction: column; overflow: hidden; z-index: 10;
         }
 
-        /* WATERMARK */
-        .watermark {
-            position: absolute; top: 15%; left: -20%; width: 140%; opacity: 0.03; pointer-events: none; z-index: 0;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="M30 80 Q50 20 80 10 Q70 40 60 90 Q40 60 30 80 Z"/></svg>') no-repeat center;
-            background-size: contain; aspect-ratio: 1;
-        }
+        /* GLASSMORPHISM CARDS */
+        .card { background: rgba(10, 22, 40, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
 
-        /* HEADER */
+        /* HEADER WITH FLAG AND LANG */
         .header {
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10,22,40,0.9); z-index: 10; border-bottom: 1px solid rgba(0,212,255,0.2);
+            background: rgba(10,22,40,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 10; border-bottom: 1px solid rgba(0,212,255,0.2); position: relative;
+        }
+        .header::after { /* Angola Flag Underline */
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #cc0000 50%, #000000 50%);
         }
         .logo { font-weight: 800; font-size: 20px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
-        .badge-tls { font-size: 10px; color: var(--green); border: 1px solid var(--green); padding: 2px 6px; border-radius: 4px; }
+        
+        /* Language Toggle Pill */
+        .lang-switch {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px;
+            padding: 4px 10px; color: white; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
 
         /* SCREENS */
-        .screen { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; display: none; z-index: 5; position: relative;}
+        #screens-wrapper { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
+        .screen { padding: 20px; padding-bottom: 80px; display: none; z-index: 5; position: relative; min-height: 101%; /* trigger scroll for parallax */ }
         .screen.active { display: block; animation: fade 0.3s; }
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* NAV */
         .nav {
-            position: absolute; bottom: 0; width: 100%; height: 70px; background: rgba(10,22,40,0.95);
-            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); z-index: 20;
+            position: absolute; bottom: 0; width: 100%; height: 70px; background: rgba(10,22,40,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.2); z-index: 20;
         }
-        .nav-btn { background: none; border: none; color: #6b9cd4; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; }
+        .nav-btn { background: none; border: none; color: #6b9cd4; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; min-height: 48px; min-width: 48px; justify-content: center; }
         .nav-btn.active { color: var(--accent); }
         .nav-btn.scan { color: #fff; }
         .scan-fab { background: linear-gradient(135deg, var(--primary), var(--accent)); width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transform: translateY(-15px); box-shadow: 0 5px 15px rgba(0,212,255,0.4); }
@@ -62,13 +115,12 @@
         /* COMPONENTS */
         .btn {
             background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 12px;
-            width: 100%; min-height: 48px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            width: 100%; min-height: 48px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4); text-transform: uppercase;
         }
-        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
         
         /* SCAN UI */
         .upload-area { border: 2px dashed var(--accent); border-radius: 12px; height: 150px; display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 20px; position: relative; overflow: hidden; background: rgba(0,212,255,0.05); }
-        .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
         #preview-img, #heatmap-layer { position: absolute; inset:0; width: 100%; height: 100%; object-fit: contain; display: none; }
         #heatmap-layer { mix-blend-mode: multiply; opacity: 0.8; z-index: 2; }
         
@@ -76,167 +128,268 @@
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
         /* OVERLAY VERDICT */
-        .verdict-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 100; overflow-y: auto; padding: 20px; display: none; }
+        .verdict-overlay { position: fixed; inset: 0; background: rgba(10, 22, 40, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100; overflow-y: auto; padding: 20px; display: none; }
         .verdict-overlay.AUTÊNTICO { border-top: 10px solid var(--green); }
         .verdict-overlay.FALSO { border-top: 10px solid var(--red); animation: shake 0.5s; }
         .verdict-overlay.SUSPEITO { border-top: 10px solid var(--orange); }
         
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
         
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; font-weight: 800; border: 5px solid; margin: 20px auto; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; font-weight: 800; border: 5px solid; margin: 20px auto; background: var(--bg); }
         
         /* TABLES & LISTS */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .tag { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .tag { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; display: inline-block; }
         .tag.ALTO, .tag.FALSO { background: rgba(255,23,68,0.2); color: var(--red); }
         .tag.MEDIO, .tag.SUSPEITO { background: rgba(255,145,0,0.2); color: var(--orange); }
         .tag.BAIXO { background: rgba(255,215,0,0.2); color: var(--gold); }
         .tag.PASS, .tag.ORIGINAL, .tag.AUTÊNTICO { background: rgba(0,230,118,0.2); color: var(--green); }
 
-        .input-field { width: 100%; padding: 12px; min-height: 48px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; }
+        .input-field { width: 100%; padding: 12px; min-height: 48px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; font-family: monospace; }
         
-        #toast { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: var(--red); padding: 15px; border-radius: 8px; z-index: 1000; display: none; font-weight: 600; width: 90%; max-width: 400px; text-align: center; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--red); padding: 15px 20px; border-radius: 8px; z-index: 1000; display: none; font-weight: 600; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
+<!-- FULL SCREEN STUNNING SAVANNA BACKGROUND -->
+<div class="savanna-bg" id="parallax-bg">
+    <div class="stars"></div>
+    <div class="sunset-glow"></div>
+    <div class="palanca-container">
+        <!-- SVG approximation of Giant Sable Antelope -->
+        <svg class="palanca-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M120 180 L115 120 Q110 90 90 85 Q70 80 60 70 Q55 60 45 65 Q40 60 45 50 Q55 45 60 55 Q70 45 80 65 Q100 70 120 90 Q125 70 120 40 Q118 20 110 5 Q115 5 125 25 Q135 60 135 90 L140 180 Z" />
+            <path d="M110 5 Q100 20 110 40" stroke="#07101d" stroke-width="2" fill="none"/>
+            <path d="M90 180 L95 120 Q100 110 110 115 L105 180 Z" />
+        </svg>
+    </div>
+    <div class="savanna-grass"></div>
+</div>
+
 <div class="app-container">
-    <div class="watermark"></div>
-    
     <div id="toast"></div>
 
     <div class="header">
         <div class="logo">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--accent)" stroke-width="2"/><path d="M12 6v6l4 2" stroke="var(--accent)" stroke-width="2"/></svg>
-            VeriFundu
+            <span data-i18n="appName">VeriFundu</span>
         </div>
-        <div class="badge-tls">Conexão Segura TLS</div>
+        <button class="lang-switch" onclick="toggleLang()" id="langBtn">🇦🇴 PT</button>
     </div>
 
-    <!-- HOME -->
-    <div id="scr-home" class="screen active">
-        <h2>Bem-vindo ao VeriFundu.</h2>
-        <div class="card">
-            <h3 style="color:var(--accent); margin-top:0;">Deteção Forense de Fraudes</h3>
-            <p style="font-size:14px; line-height:1.4;">Analisa recibos BAI, BFA, BIC e MULTICAIXA Express em tempo real usando ELA (Error Level Analysis), Metadados EXIF e Inteligência Artificial.</p>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <div class="card" style="flex:1; text-align:center;">
-                <h4 style="margin:0; color:#6b9cd4;">Verificados</h4>
-                <div id="home-total" style="font-size:24px; font-weight:800; color:white;">0</div>
-            </div>
-            <div class="card" style="flex:1; text-align:center;">
-                <h4 style="margin:0; color:var(--red);">Fraudes</h4>
-                <div id="home-fraud" style="font-size:24px; font-weight:800; color:white;">0</div>
-            </div>
-        </div>
-        <button class="btn" onclick="nav('scan')" style="margin-top:20px;">VERIFICAR RECIBO</button>
-    </div>
-
-    <!-- SCAN -->
-    <div id="scr-scan" class="screen">
-        <h2 style="margin-top:0;">Analisar Recibo</h2>
+    <!-- SCREENS WRAPPER (for parallax scrolling) -->
+    <div id="screens-wrapper">
         
-        <div class="upload-area" id="dropzone">
-            <div id="upload-msg" style="text-align:center;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                <p>Clique ou arraste ficheiro<br><small>JPG / PNG / PDF suportado</small></p>
+        <!-- HOME -->
+        <div id="scr-home" class="screen active">
+            <h2 style="margin-top:0;" data-i18n="welcome">Bem-vindo ao VeriFundu.</h2>
+            <div class="card">
+                <h3 style="color:var(--accent); margin-top:0;" data-i18n="subtitle">Deteção Forense de Fraudes</h3>
+                <p style="font-size:14px; line-height:1.4;" data-i18n="desc">Analisa recibos BAI, BFA, BIC e MULTICAIXA Express em tempo real usando ELA, Metadados EXIF e Inteligência Artificial.</p>
             </div>
-            <img id="preview-img" alt="Preview">
-            <canvas id="heatmap-layer"></canvas>
-            <div class="laser" id="laser"></div>
-            <input type="file" id="filein" accept="image/jpeg, image/png, application/pdf">
+            <div style="display:flex; gap:10px;">
+                <div class="card" style="flex:1; text-align:center;">
+                    <h4 style="margin:0; color:#6b9cd4;" data-i18n="verified">Verificados</h4>
+                    <div id="home-total" style="font-size:24px; font-weight:800; color:white;">0</div>
+                </div>
+                <div class="card" style="flex:1; text-align:center;">
+                    <h4 style="margin:0; color:var(--red);" data-i18n="frauds">Fraudes</h4>
+                    <div id="home-fraud" style="font-size:24px; font-weight:800; color:white;">0</div>
+                </div>
+            </div>
+            <button class="btn" onclick="nav('scan')" style="margin-top:20px;" data-i18n="btnVerify">VERIFICAR RECIBO</button>
         </div>
-        
-        <div id="status-log" style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--accent); height:120px; overflow-y:auto; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; display:none;"></div>
-    </div>
 
-    <!-- HISTORY -->
-    <div id="scr-history" class="screen">
-        <h2 style="margin-top:0;">Histórico Recente</h2>
-        <div id="history-list"></div>
-    </div>
+        <!-- SCAN -->
+        <div id="scr-scan" class="screen">
+            <h2 style="margin-top:0;" data-i18n="scanTitle">Analisar Recibo</h2>
+            
+            <div class="upload-area card" id="dropzone">
+                <div id="upload-msg" style="text-align:center;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    <p><span data-i18n="uploadText">Clique ou arraste ficheiro</span><br><small data-i18n="uploadSub">JPG / PNG / PDF suportados</small></p>
+                </div>
+                <img id="preview-img" alt="Preview">
+                <canvas id="heatmap-layer"></canvas>
+                <div class="laser" id="laser"></div>
+                <input type="file" id="filein" accept="image/jpeg, image/png, application/pdf">
+            </div>
+            
+            <div id="status-log" style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--accent); height:120px; overflow-y:auto; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; display:none; border: 1px solid rgba(0,212,255,0.2);"></div>
+        </div>
 
-    <!-- SETTINGS -->
-    <div id="scr-settings" class="screen">
-        <h2 style="margin-top:0;">Definições</h2>
-        <div class="card">
-            <label style="font-size:12px; color:#6b9cd4;">Google Gemini API Key</label>
-            <input type="password" id="api-key" class="input-field" placeholder="AIzaSy...">
-            <button class="btn" onclick="saveKey()" style="min-height:36px; font-size:14px;">Guardar Key</button>
+        <!-- HISTORY -->
+        <div id="scr-history" class="screen">
+            <h2 style="margin-top:0;" data-i18n="historyTitle">Histórico Recente</h2>
+            <div id="history-list"></div>
         </div>
-        
-        <div class="card">
-            <h3 style="margin-top:0;">Blacklist de IBANs</h3>
-            <div id="blacklist-list" style="max-height:150px; overflow-y:auto; margin-bottom:10px; font-family:'JetBrains Mono', monospace; font-size:12px;"></div>
-            <button class="btn" onclick="clearBlacklist()" style="background:var(--red); min-height:36px; font-size:14px;">Limpar Blacklist</button>
+
+        <!-- SETTINGS -->
+        <div id="scr-settings" class="screen">
+            <h2 style="margin-top:0;" data-i18n="settingsTitle">Definições</h2>
+            <div class="card">
+                <label style="font-size:12px; color:#6b9cd4;" data-i18n="apiKeyLabel">Google Gemini API Key</label>
+                <input type="password" id="api-key" class="input-field" placeholder="AIzaSy...">
+                <button class="btn" onclick="saveKey()" data-i18n="btnSaveKey">Guardar Key</button>
+            </div>
+            
+            <div class="card">
+                <h3 style="margin-top:0;" data-i18n="blacklistTitle">Blacklist de IBANs</h3>
+                <div id="blacklist-list" style="max-height:150px; overflow-y:auto; margin-bottom:10px; font-family:'JetBrains Mono', monospace; font-size:12px; border:1px solid rgba(255,255,255,0.1); padding:5px; border-radius:4px; background:rgba(0,0,0,0.4);"></div>
+                <button class="btn" onclick="clearBlacklist()" style="background:var(--red);" data-i18n="btnCleanBl">Limpar Blacklist</button>
+            </div>
         </div>
-    </div>
+
+    </div> <!-- End Screens Wrapper -->
 
     <!-- NAVIGATION -->
     <nav class="nav">
         <button class="nav-btn active" onclick="nav('home')" id="nav-btn-home">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Início
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> <span data-i18n="navHome">Início</span>
         </button>
         <button class="nav-btn scan" onclick="nav('scan')" id="nav-btn-scan">
             <div class="scan-fab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z"/></svg></div>
-            <span style="transform:translateY(-8px)">Scan</span>
+            <span style="transform:translateY(-8px)" data-i18n="navScan">Scan</span>
         </button>
         <button class="nav-btn" onclick="nav('history')" id="nav-btn-history">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Histórico
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> <span data-i18n="navHistory">Histórico</span>
         </button>
         <button class="nav-btn" onclick="nav('settings')" id="nav-btn-settings">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33... (truncated path) ..."/></svg> Definições
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33l-.06-.06a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg> <span data-i18n="navSettings">Definições</span>
         </button>
     </nav>
 
     <!-- VERDICT OVERLAY -->
     <div class="verdict-overlay" id="verdict">
-        <h1 id="v-title" style="text-align:center; font-size:36px; margin:10px 0;"></h1>
+        <h1 id="v-title" style="text-align:center; font-size:36px; margin:10px 0; text-shadow: 0 0 20px currentColor;"></h1>
         <div class="score-circle" id="v-score-circle"><span id="v-score"></span></div>
         
-        <div class="card" style="border:1px solid rgba(255,255,255,0.2);">
-            <h4 style="margin-top:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">DADOS DO BENEFICIÁRIO</h4>
+        <div class="card">
+            <h4 style="margin-top:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;" data-i18n="dataTitle">DADOS DO BENEFICIÁRIO</h4>
             <table style="margin:0;">
-                <tr><td style="color:#6b9cd4;">Nome</td><td id="v-ben-nome" style="font-weight:bold;"></td></tr>
-                <tr><td style="color:#6b9cd4;">IBAN</td><td id="v-ben-iban" style="font-family:'JetBrains Mono';"></td></tr>
-                <tr><td style="color:#6b9cd4;">Banco</td><td id="v-ben-banco"></td></tr>
-                <tr><td style="color:#6b9cd4;">Montante</td><td id="v-ben-montante" style="font-weight:bold; color:var(--gold);"></td></tr>
-                <tr><td style="color:#6b9cd4;">Data</td><td id="v-ben-data"></td></tr>
+                <tr><td style="color:#6b9cd4;" data-i18n="fName">Nome</td><td id="v-ben-nome" style="font-weight:bold;"></td></tr>
+                <tr><td style="color:#6b9cd4;" data-i18n="fIban">IBAN</td><td id="v-ben-iban" style="font-family:'JetBrains Mono';"></td></tr>
+                <tr><td style="color:#6b9cd4;" data-i18n="fBank">Banco</td><td id="v-ben-banco"></td></tr>
+                <tr><td style="color:#6b9cd4;" data-i18n="fAmount">Montante</td><td id="v-ben-montante" style="font-weight:bold; color:var(--gold);"></td></tr>
+                <tr><td style="color:#6b9cd4;" data-i18n="fDate">Data</td><td id="v-ben-data"></td></tr>
             </table>
         </div>
 
         <div class="card">
-            <h4 style="margin-top:0;">CHECKLIST FORENSE</h4>
+            <h4 style="margin-top:0;" data-i18n="checklistTitle">CHECKLIST FORENSE</h4>
             <table id="v-checklist"></table>
         </div>
 
         <div class="card">
-            <h4 style="margin-top:0;">SINAIS DE FRAUDE</h4>
+            <h4 style="margin-top:0;" data-i18n="fraudSignalsTitle">SINAIS DE FRAUDE</h4>
             <div id="v-fraudes"></div>
         </div>
 
         <div class="card">
-            <h4 style="margin-top:0;">CAMPOS EDITADOS (ELA)</h4>
+            <h4 style="margin-top:0;" data-i18n="editedFieldsTitle">CAMPOS EDITADOS (ELA)</h4>
             <table id="v-campos"></table>
         </div>
 
-        <p id="v-resumo" style="font-size:13px; line-height:1.5; color:#ccc;"></p>
+        <p id="v-resumo" style="font-size:13px; line-height:1.5; color:#ccc; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;"></p>
 
-        <button class="btn" onclick="addToBlacklistBtn()" id="btn-add-blacklist" style="background:var(--red); display:none; margin-bottom:10px;">Adicionar IBAN à Blacklist</button>
-        <button class="btn" onclick="shareWa()" style="background:#25D366; margin-bottom:10px;">Partilhar no WhatsApp</button>
-        <button class="btn" onclick="closeVerdict()" style="background:var(--bg); border:1px solid rgba(255,255,255,0.2);">Fechar</button>
+        <button class="btn" onclick="addToBlacklistBtn()" id="btn-add-blacklist" style="background:var(--red); display:none; margin-bottom:10px;" data-i18n="btnAddBl">Adicionar IBAN à Blacklist</button>
+        <button class="btn" onclick="shareWa()" style="background:#25D366; margin-bottom:10px;" data-i18n="btnShare">Partilhar no WhatsApp</button>
+        <button class="btn" onclick="closeVerdict()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);" data-i18n="btnClose">Fechar</button>
     </div>
 </div>
 
 <script>
-    /* SESSION & GLOBALS */
+    /* ── I18N DICTIONARY ── */
+    const langs = ['pt', 'en', 'fr', 'es'];
+    const flags = { pt: '🇦🇴 PT', en: '🇬🇧 EN', fr: '🇫🇷 FR', es: '🇪🇸 ES' };
+    const dict = {
+        'pt': {
+            appName: 'VeriFundu', welcome: 'Bem-vindo ao VeriFundu.', subtitle: 'Deteção Forense de Fraudes', desc: 'Analisa recibos BAI, BFA, BIC e MULTICAIXA Express em tempo real usando ELA, Metadados EXIF e Inteligência Artificial.',
+            verified: 'Verificados', frauds: 'Fraudes', btnVerify: 'VERIFICAR RECIBO', scanTitle: 'Analisar Recibo', uploadText: 'Clique ou arraste ficheiro', uploadSub: 'JPG / PNG / PDF suportados',
+            historyTitle: 'Histórico Recente', settingsTitle: 'Definições', apiKeyLabel: 'Google Gemini API Key', btnSaveKey: 'Guardar Key',
+            blacklistTitle: 'Blacklist de IBANs', btnCleanBl: 'Limpar Blacklist', navHome: 'Início', navScan: 'Scan', navHistory: 'Histórico', navSettings: 'Definições',
+            dataTitle: 'DADOS DO BENEFICIÁRIO', fName: 'Nome', fIban: 'IBAN', fBank: 'Banco', fAmount: 'Montante', fDate: 'Data',
+            checklistTitle: 'CHECKLIST FORENSE', cIban: 'Validação IBAN', cAmount: 'Montante vs Total', cDigital: 'Assinatura Digital',
+            fraudSignalsTitle: 'SINAIS DE FRAUDE', editedFieldsTitle: 'CAMPOS EDITADOS (ELA)', btnAddBl: 'Adicionar IBAN à Blacklist', btnShare: 'Partilhar no WhatsApp', btnClose: 'Fechar',
+            loadingPdf: 'A carregar PDF...', noHistory: 'Sem verificações...', emptyBlock: 'Vazia.', keySaved: 'Key guardada!', blCleared: 'Blacklist limpa.',
+            blAdded: 'IBAN adicionado à blacklist.', missingKey: 'Falta a API Key nas Definições.', timeoutWarn: 'Aviso: Sessão expira em 30 segundos...',
+            vAutentico: 'AUTÊNTICO', vFalso: 'FALSO', vSuspeito: 'SUSPEITO', tPass: 'PASS', tFail: 'FAIL', tDiverge: 'DIVERGE', tMissing: 'MISSING', msgNoFraud: 'Nenhum sinal detectado.'
+        },
+        'en': {
+            appName: 'VeriFundu', welcome: 'Welcome to VeriFundu.', subtitle: 'Forensic Fraud Detection', desc: 'Analyzes BAI, BFA, BIC, and MULTICAIXA Express receipts in real-time using ELA, EXIF Metadata, and Artificial Intelligence.',
+            verified: 'Verified', frauds: 'Frauds', btnVerify: 'VERIFY RECEIPT', scanTitle: 'Analyze Receipt', uploadText: 'Click or drag file', uploadSub: 'JPG / PNG / PDF supported',
+            historyTitle: 'Recent History', settingsTitle: 'Settings', apiKeyLabel: 'Google Gemini API Key', btnSaveKey: 'Save Key',
+            blacklistTitle: 'IBAN Blacklist', btnCleanBl: 'Clear Blacklist', navHome: 'Home', navScan: 'Scan', navHistory: 'History', navSettings: 'Settings',
+            dataTitle: 'BENEFICIARY DATA', fName: 'Name', fIban: 'IBAN', fBank: 'Bank', fAmount: 'Amount', fDate: 'Date',
+            checklistTitle: 'FORENSIC CHECKLIST', cIban: 'IBAN Validation', cAmount: 'Amount vs Total', cDigital: 'Digital Signature',
+            fraudSignalsTitle: 'FRAUD SIGNALS', editedFieldsTitle: 'EDITED FIELDS (ELA)', btnAddBl: 'Add IBAN to Blacklist', btnShare: 'Share on WhatsApp', btnClose: 'Close',
+            loadingPdf: 'Loading PDF...', noHistory: 'No verifications...', emptyBlock: 'Empty.', keySaved: 'Key saved!', blCleared: 'Blacklist cleared.',
+            blAdded: 'IBAN added to blacklist.', missingKey: 'Missing API Key in Settings.', timeoutWarn: 'Warning: Session expires in 30 seconds...',
+            vAutentico: 'AUTHENTIC', vFalso: 'FAKE', vSuspeito: 'SUSPICIOUS', tPass: 'PASS', tFail: 'FAIL', tDiverge: 'DIVERGE', tMissing: 'MISSING', msgNoFraud: 'No signals detected.'
+        },
+        'fr': {
+            appName: 'VeriFundu', welcome: 'Bienvenue sur VeriFundu.', subtitle: 'Détection Légale des Fraudes', desc: 'Analyse les reçus BAI, BFA, BIC et MULTICAIXA Express en temps réel via ELA, Métadonnées EXIF et Intelligence Artificielle.',
+            verified: 'Vérifiés', frauds: 'Fraudes', btnVerify: 'VÉRIFIER LE REÇU', scanTitle: 'Analyser le Reçu', uploadText: 'Cliquez ou glissez le fichier', uploadSub: 'JPG / PNG / PDF supportés',
+            historyTitle: 'Historique Récent', settingsTitle: 'Paramètres', apiKeyLabel: 'Google Gemini API Key', btnSaveKey: 'Sauvegarder Clé',
+            blacklistTitle: 'Liste Noire IBAN', btnCleanBl: 'Vider la Liste Noire', navHome: 'Accueil', navScan: 'Scan', navHistory: 'Historique', navSettings: 'Paramètres',
+            dataTitle: 'DONNÉES BÉNÉFICIAIRE', fName: 'Nom', fIban: 'IBAN', fBank: 'Banque', fAmount: 'Montant', fDate: 'Date',
+            checklistTitle: 'CHECKLIST FORENSIQUE', cIban: 'Validation IBAN', cAmount: 'Montant vs Total', cDigital: 'Signature Numérique',
+            fraudSignalsTitle: 'SIGNAUX DE FRAUDE', editedFieldsTitle: 'CHAMPS ÉDITÉS (ELA)', btnAddBl: 'Ajouter IBAN à la Liste Noire', btnShare: 'Partager sur WhatsApp', btnClose: 'Fermer',
+            loadingPdf: 'Chargement PDF...', noHistory: 'Aucune vérification...', emptyBlock: 'Vide.', keySaved: 'Clé sauvegardée!', blCleared: 'Liste noire effacée.',
+            blAdded: 'IBAN ajouté à la liste noire.', missingKey: 'Clé API manquante dans les paramètres.', timeoutWarn: 'Attention: La session expire dans 30 s...',
+            vAutentico: 'AUTHENTIQUE', vFalso: 'FAUX', vSuspeito: 'SUSPECT', tPass: 'PASS', tFail: 'FAIL', tDiverge: 'DIVERGE', tMissing: 'MANQUANT', msgNoFraud: 'Aucun signal détecté.'
+        },
+        'es': {
+            appName: 'VeriFundu', welcome: 'Bienvenido a VeriFundu.', subtitle: 'Detección Forense de Fraudes', desc: 'Analiza recibos BAI, BFA, BIC y MULTICAIXA Express en tiempo real usando ELA, Metadatos EXIF e Inteligencia Artificial.',
+            verified: 'Verificados', frauds: 'Fraudes', btnVerify: 'VERIFICAR RECIBO', scanTitle: 'Analizar Recibo', uploadText: 'Haga clic o arrastre el archivo', uploadSub: 'JPG / PNG / PDF admitidos',
+            historyTitle: 'Historial Reciente', settingsTitle: 'Ajustes', apiKeyLabel: 'Google Gemini API Key', btnSaveKey: 'Guardar Key',
+            blacklistTitle: 'Lista Negra de IBANs', btnCleanBl: 'Limpiar Lista Negra', navHome: 'Inicio', navScan: 'Scan', navHistory: 'Historial', navSettings: 'Ajustes',
+            dataTitle: 'DATOS DEL BENEFICIARIO', fName: 'Nombre', fIban: 'IBAN', fBank: 'Banco', fAmount: 'Monto', fDate: 'Fecha',
+            checklistTitle: 'LISTA DE VERIFICACIÓN', cIban: 'Validación IBAN', cAmount: 'Monto vs Total', cDigital: 'Firma Digital',
+            fraudSignalsTitle: 'SEÑALES DE FRAUDE', editedFieldsTitle: 'CAMPOS EDITADOS (ELA)', btnAddBl: 'Añadir IBAN a Lista Negra', btnShare: 'Compartir en WhatsApp', btnClose: 'Cerrar',
+            loadingPdf: 'Cargando PDF...', noHistory: 'Sin verificaciones...', emptyBlock: 'Vacía.', keySaved: '¡Clave guardada!', blCleared: 'Lista negra borrada.',
+            blAdded: 'IBAN añadido a la lista negra.', missingKey: 'Falta la API Key en Ajustes.', timeoutWarn: 'Aviso: La sesión expira en 30 s...',
+            vAutentico: 'AUTÉNTICO', vFalso: 'FALSO', vSuspeito: 'SOSPECHOSO', tPass: 'PASS', tFail: 'FAIL', tDiverge: 'DIVERGE', tMissing: 'FALTA', msgNoFraud: 'Ninguna señal detectada.'
+        }
+    };
+    
+    let currentLang = localStorage.getItem('vf_lang') || 'pt';
+    function t(key) { return dict[currentLang][key] || key; }
+
+    function updateLanguageUI() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerHTML = t(el.getAttribute('data-i18n'));
+        });
+        document.getElementById('langBtn').textContent = flags[currentLang];
+        // Rerender dynamic lists to apply new language
+        renderHistory();
+        renderSettings();
+        if(document.getElementById('verdict').style.display === 'block') { renderOverlay(currentReport); }
+    }
+
+    function toggleLang() {
+        let idx = langs.indexOf(currentLang);
+        currentLang = langs[(idx + 1) % langs.length];
+        localStorage.setItem('vf_lang', currentLang);
+        updateLanguageUI();
+    }
+
+    /* ── PARALLAX BACKGROUND EFFECT ── */
+    const screensWrapper = document.getElementById('screens-wrapper');
+    const parallaxBg = document.getElementById('parallax-bg');
+    screensWrapper.addEventListener('scroll', () => {
+        let scrollY = screensWrapper.scrollTop;
+        parallaxBg.style.transform = `translateY(${scrollY * -0.1}px)`;
+    });
+
+    /* ── SESSION & GLOBALS ── */
     let sessionTimer = null;
     function resetSession() {
         clearTimeout(sessionTimer);
         sessionTimer = setTimeout(() => {
-            showToast("Aviso: Sessão expira em 30 segundos...", "auto");
+            showToast(t('timeoutWarn'), "auto");
             setTimeout(() => window.location.reload(), 30000);
         }, 270000); // 4m 30s
     }
@@ -248,47 +401,45 @@
     let blacklist = JSON.parse(localStorage.getItem('vf_blacklist') || '[]');
     let currentReport = null;
 
-    /* NAVIGATION */
+    /* ── NAVIGATION ── */
     function nav(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('scr-'+id).classList.add('active');
         document.getElementById('nav-btn-'+id)?.classList.add('active');
+        screensWrapper.scrollTop = 0; // Reset scroll for parallax
         
         if (id === 'history') renderHistory();
         if (id === 'home') renderHome();
         if (id === 'settings') renderSettings();
     }
 
-    /* TOAST */
     function showToast(msg, bg=null) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.style.background = bg || 'var(--red)';
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 4000);
+        const tr = document.getElementById('toast');
+        tr.textContent = msg;
+        tr.style.background = bg || 'var(--red)';
+        tr.style.display = 'block';
+        setTimeout(() => tr.style.display = 'none', 4000);
     }
 
-    /* HOME DATA */
+    /* ── VIEWS ── */
     function renderHome() {
         document.getElementById('home-total').textContent = historyData.length;
         document.getElementById('home-fraud').textContent = historyData.filter(x => x.veredicto === 'FALSO').length;
     }
 
-    /* SETTINGS DATA */
     function saveKey() {
         const k = document.getElementById('api-key').value;
-        if(k) { localStorage.setItem('gemini_key', k); showToast("Key guardada!", "var(--green)"); }
+        if(k) { localStorage.setItem('gemini_key', k); showToast(t('keySaved'), "var(--green)"); }
     }
     function renderSettings() {
         const k = localStorage.getItem('gemini_key');
         if(k) document.getElementById('api-key').value = "********";
-        
         const bList = document.getElementById('blacklist-list');
-        bList.innerHTML = blacklist.length ? blacklist.map(i => `<div>🔴 ${i}</div>`).join('') : '<span style="color:#666">Vazia.</span>';
+        bList.innerHTML = blacklist.length ? blacklist.map(i => `<div>🔴 ${i}</div>`).join('') : `<span style="color:#666">${t('emptyBlock')}</span>`;
     }
     function clearBlacklist() {
-        blacklist = []; localStorage.removeItem('vf_blacklist'); renderSettings(); showToast("Blacklist limpa.", "var(--green)");
+        blacklist = []; localStorage.removeItem('vf_blacklist'); renderSettings(); showToast(t('blCleared'), "var(--green)");
     }
     function addToBlacklist(iban) {
         if(iban && !blacklist.includes(iban)) {
@@ -299,17 +450,15 @@
     function addToBlacklistBtn() {
         if(currentReport && currentReport.beneficiario?.iban_masked) {
             addToBlacklist(currentReport.beneficiario.iban_masked);
-            showToast("IBAN adicionado à blacklist.");
+            showToast(t('blAdded'));
             document.getElementById('btn-add-blacklist').style.display = 'none';
         }
     }
 
-    /* UPLOAD & ANALYSIS PIPELINE */
+    /* ── PIPELINE & API ── */
     const filein = document.getElementById('filein');
     filein.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            startPipeline(e.target.files[0]);
-        }
+        if (e.target.files.length > 0) startPipeline(e.target.files[0]);
     });
 
     function log(msg) {
@@ -319,7 +468,6 @@
         sel.scrollTop = sel.scrollHeight;
     }
 
-    /* PDF CONVERSION */
     async function convertPdfToBase64(file) {
         log("A converter PDF para imagem...");
         const arrayBuffer = await file.arrayBuffer();
@@ -327,18 +475,43 @@
         const page = await pdf.getPage(1);
         const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
         return canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+    }
+
+    function fileToBase64(file) {
+        return new Promise((res, rej) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => res(reader.result.split(',')[1]);
+            reader.onerror = error => rej(error);
+        });
+    }
+
+    async function runELA(imgEl, canvas) {
+        return new Promise(res => {
+            setTimeout(() => {
+                canvas.style.display = 'block';
+                canvas.width = imgEl.naturalWidth || 400; canvas.height = imgEl.naturalHeight || 800;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.15)'; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                res();
+            }, 800);
+        });
+    }
+
+    function checkExif(file) {
+        return new Promise(res => {
+            setTimeout(() => res(file.name.toLowerCase().includes('edit') || file.name.toLowerCase().includes('photoshop')), 300);
+        });
     }
 
     async function startPipeline(file) {
         const key = localStorage.getItem('gemini_key');
-        if(!key) return showToast("Falta a API Key nas Definições.");
+        if(!key) return showToast(t('missingKey'));
 
-        // Prepare UI
         document.getElementById('upload-msg').style.display = 'none';
         const pImg = document.getElementById('preview-img');
         const hCanvas = document.getElementById('heatmap-layer');
@@ -348,32 +521,21 @@
         log("Ficheiro carregado: " + file.name);
 
         if (file.type === 'application/pdf') {
-            pImg.src = 'data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%230a1628"/><text x="50" y="50" fill="%2300d4ff" font-family="Arial" font-size="20" text-anchor="middle" dominant-baseline="middle">A carregar PDF...</text></svg>';
-        } else {
-            pImg.src = URL.createObjectURL(file);
-        }
+            const loadStr = t('loadingPdf');
+            pImg.src = `data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%230a1628"/><text x="50" y="50" fill="%2300d4ff" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle">${loadStr}</text></svg>`;
+        } else { pImg.src = URL.createObjectURL(file); }
         
         setTimeout(async () => {
             document.getElementById('laser').style.display = 'block';
             log("Iniciando Deteção Forense Local...");
-
-            // 1. Basic Canvas ELA computation (Simulated Heatmap Generation for visual effect)
             log("Executando Error Level Analysis (Canvas API)...");
             await runELA(pImg, hCanvas);
-            
-            // 2. EXIF check (Mock simple heuristic due to pure JS limit)
             log("Analisando Metadados (EXIF/Headers)...");
             const hasExifFraud = await checkExif(file);
 
-            // 3. Convert to Base64 for Gemini Vision
-            log("Extraindo imagem base64...");
-            let b64 = "";
-            if (file.type === 'application/pdf') {
-                b64 = await convertPdfToBase64(file);
-                pImg.src = "data:image/jpeg;base64," + b64;
-            } else {
-                b64 = await fileToBase64(file);
-            }
+            log("A converter base64 (Imagem/PDF)...");
+            let b64 = file.type === 'application/pdf' ? await convertPdfToBase64(file) : await fileToBase64(file);
+            if (file.type === 'application/pdf') pImg.src = "data:image/jpeg;base64," + b64;
 
             log("A invocar Inteligência Artificial (Google Gemini 1.5 Flash)...");
             try {
@@ -386,136 +548,65 @@
         }, 1000);
     }
 
-    function fileToBase64(file) {
-        return new Promise((res, rej) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => res(reader.result.split(',')[1]);
-            reader.onerror = error => rej(error);
-        });
-    }
-
-    /* MOCK ELA VISUALIZATION (Real ELA requires pixel diffs, here we overlay a color blend) */
-    async function runELA(imgEl, canvas) {
-        return new Promise(res => {
-            setTimeout(() => {
-                canvas.style.display = 'block';
-                canvas.width = imgEl.naturalWidth || 400;
-                canvas.height = imgEl.naturalHeight || 800;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.15)'; // Add a red tint over edited-looking areas
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                res();
-            }, 800);
-        });
-    }
-
-    function checkExif(file) {
-        return new Promise(res => {
-            setTimeout(() => {
-                // If filename has 'edited', 'psd', 'wa' (WhatsApp compression removes exif)
-                if(file.name.toLowerCase().includes('edit') || file.name.toLowerCase().includes('photoshop')) {
-                    res(true);
-                }
-                res(false);
-            }, 300);
-        });
-    }
-
-    /* GOOGLE GEMINI INTEGRATION */
     async function callGeminiAPI(base64Image, key, hasExifFraud) {
         const sysPrompt = "You are a skeptical forensic fraud expert for Angolan bank receipts (BAI, BFA, BIC, Millennium, MULTICAIXA Express). Assume fraud until proven otherwise. NEVER return AUTÊNTICO unless every single check passes perfectly. Check: font inconsistency across fields, pixel artifacts around numbers, alignment errors, duplicate footer, IBAN format AO06 followed by EXACTLY 21 digits, amount manipulation signs, weekday logic, missing digital signature noreply@mcxexpress.co.ao, transaction number format 8 digits for BAI, background variance. Respond only in valid JSON exactly in this format without markdown wrappers: {\"veredicto\":\"AUTÊNTICO|FALSO|SUSPEITO\", \"banco_detectado\":\"str\", \"beneficiario\":{\"nome\":\"str\", \"iban_masked\":\"str\", \"banco\":\"str\", \"tipo_conta\":\"str\"}, \"dados\":{\"data\":\"str\", \"montante\":\"str\", \"total\":\"str\", \"transaccao\":\"str\", \"assinatura_digital\":true|false}, \"campos_editados\":[{\"campo\":\"str\", \"status\":\"ORIGINAL|EDITADO|SUSPEITO\", \"motivo\":\"str\"}], \"sinais_fraude\":[{\"nivel\":\"ALTO|MEDIO|BAIXO\", \"descricao\":\"str\"}], \"pontos_positivos\":[\"str\"], \"resumo\":\"str\"}";
 
         const payload = {
             systemInstruction: { parts: [{ text: sysPrompt }] },
-            contents: [{
-                parts: [
-                    { text: `Analyze this Angolan bank receipt. Additional system context: EXIF manipulation detected by host = ${hasExifFraud}. Format output as strict JSON.` },
-                    { inlineData: { mimeType: "image/jpeg", data: base64Image } }
-                ]
-            }],
-            generationConfig: {
-                responseMimeType: "application/json"
-            }
+            contents: [{ parts: [ { text: `Analyze this Angolan bank receipt. Additional system context: EXIF manipulation detected by host = ${hasExifFraud}. Format output as strict JSON.` }, { inlineData: { mimeType: "image/jpeg", data: base64Image } } ] }],
+            generationConfig: { responseMimeType: "application/json" }
         };
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-            const errBody = await response.text();
-            throw new Error(errBody);
-        }
+        if (!response.ok) throw new Error(await response.text());
 
-        const data = await response.json();
-        let rawText = data.candidates[0].content.parts[0].text;
-        
-        // Clean JSON formatting if Gemini added markdown codeblocks despite responseMimeType
-        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(rawText);
+        let rawText = (await response.json()).candidates[0].content.parts[0].text;
+        return JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
     }
 
-    /* SCORING PROCESSOR */
     function processResult(res) {
         log("Processamento concluído. A calcular pontuação...");
         document.getElementById('laser').style.display = 'none';
 
-        // Base Score Calculation
         let score = 50;
         if(res.pontos_positivos) score += (res.pontos_positivos.length * 10);
-        
-        let hasAlto = false;
-        let duplicateFooter = false;
-        let invalidIban = false;
+        let hasAlto = false, duplicateFooter = false, invalidIban = false;
         
         if(res.sinais_fraude) {
             res.sinais_fraude.forEach(s => {
                 if(s.nivel === 'ALTO') { score -= 30; hasAlto = true; }
                 if(s.nivel === 'MEDIO') score -= 15;
                 if(s.nivel === 'BAIXO') score -= 5;
-                
-                if(s.descricao.toLowerCase().includes('rodapé') || s.descricao.toLowerCase().includes('footer')) duplicateFooter = true;
-                if(s.descricao.toLowerCase().includes('iban')) invalidIban = true;
+                let desc = s.descricao.toLowerCase();
+                if(desc.includes('rodapé') || desc.includes('footer')) duplicateFooter = true;
+                if(desc.includes('iban')) invalidIban = true;
             });
         }
 
-        // Golden Rules enforce
         if (duplicateFooter) score = 0;
         if (invalidIban && score > 20) score = 20;
         if (res.dados.montante && res.dados.total && res.dados.montante !== res.dados.total && score > 15) score = 15;
 
-        // Cap score
         score = Math.max(0, Math.min(100, score));
 
-        // Re-evaluate Veredicto purely on our rigorous logic
         let finalVerdict = 'FALSO';
         if (score >= 80 && !hasAlto) finalVerdict = 'AUTÊNTICO';
         else if ((score >= 60 && score <= 79) || hasAlto) finalVerdict = 'SUSPEITO';
         if (score < 60 || duplicateFooter) finalVerdict = 'FALSO';
 
-        // Blacklist block check
         if(res.beneficiario && res.beneficiario.iban_masked && blacklist.includes(res.beneficiario.iban_masked)) {
-            finalVerdict = 'FALSO';
-            score = 0;
+            finalVerdict = 'FALSO'; score = 0;
             if(!res.sinais_fraude) res.sinais_fraude = [];
-            res.sinais_fraude.push({nivel:'ALTO', descricao: 'IBAN BLOQUEADO — Associado a fraude anterior.'});
+            res.sinais_fraude.push({nivel:'ALTO', descricao: 'IBAN BLOQUEADO.'});
         }
 
         const report = {
-            id: Date.now(),
-            date: new Date().toISOString(),
-            veredicto: finalVerdict,
-            score: score,
-            banco_detectado: res.banco_detectado || 'N/A',
-            beneficiario: res.beneficiario || {},
-            dados: res.dados || {},
-            campos_editados: res.campos_editados || [],
-            sinais_fraude: res.sinais_fraude || [],
-            pontos_positivos: res.pontos_positivos || [],
-            resumo: res.resumo || ''
+            id: Date.now(), date: new Date().toISOString(), veredicto: finalVerdict, score: score,
+            banco_detectado: res.banco_detectado || 'N/A', beneficiario: res.beneficiario || {}, dados: res.dados || {},
+            campos_editados: res.campos_editados || [], sinais_fraude: res.sinais_fraude || [], resumo: res.resumo || ''
         };
 
         currentReport = report;
@@ -526,20 +617,31 @@
         renderOverlay(report);
     }
 
-    /* RENDER VERDICT OVERLAY */
+    function transVerdict(v) {
+        if(v === 'AUTÊNTICO') return t('vAutentico');
+        if(v === 'FALSO') return t('vFalso');
+        if(v === 'SUSPEITO') return t('vSuspeito');
+        return v;
+    }
+
+    function translateTag(str) {
+        if(str === 'ORIGINAL' || str === 'PASS') return t('tPass');
+        if(str === 'EDITADO' || str === 'FAIL') return t('tFail');
+        return str;
+    }
+
     function renderOverlay(r) {
         const v = document.getElementById('verdict');
-        v.className = 'verdict-overlay ' + r.veredicto;
+        v.className = 'verdict-overlay ' + r.veredicto; // Keep internal class for color logic
         v.style.display = 'block';
 
         const title = document.getElementById('v-title');
-        title.textContent = r.veredicto;
+        title.textContent = transVerdict(r.veredicto);
         title.style.color = r.veredicto==='AUTÊNTICO'? 'var(--green)' : r.veredicto==='FALSO'? 'var(--red)' : 'var(--orange)';
 
         const sc = document.getElementById('v-score-circle');
         document.getElementById('v-score').textContent = r.score;
-        sc.style.borderColor = r.score >= 80 ? 'var(--green)' : r.score >= 60 ? 'var(--orange)' : 'var(--red)';
-        sc.style.color = sc.style.borderColor;
+        sc.style.borderColor = title.style.color; sc.style.color = title.style.color;
 
         document.getElementById('v-ben-nome').textContent = r.beneficiario.nome || 'N/A';
         document.getElementById('v-ben-iban').textContent = r.beneficiario.iban_masked || 'N/A';
@@ -547,59 +649,52 @@
         document.getElementById('v-ben-montante').textContent = r.dados.montante || r.dados.total || 'N/A';
         document.getElementById('v-ben-data').textContent = r.dados.data || 'N/A';
 
-        // Checklist (Build dynamically)
         const cl = document.getElementById('v-checklist');
+        const ibanPass = !(r.score < 20 && r.sinais_fraude.find(x=>x.descricao.includes('IBAN')));
+        const amtPass = r.dados.montante === r.dados.total;
         cl.innerHTML = `
-            <tr><td>Validação IBAN</td><td><span class="tag ${r.score < 20 && r.sinais_fraude.find(x=>x.descricao.includes('IBAN'))?'FALSO':'PASS'}">${r.score < 20 ? 'FAIL' : 'PASS'}</span></td></tr>
-            <tr><td>Montante vs Total</td><td><span class="tag ${r.dados.montante === r.dados.total ? 'PASS' : 'FALSO'}">${r.dados.montante === r.dados.total ? 'PASS' : 'DIVERGE'}</span></td></tr>
-            <tr><td>Assinatura Digital</td><td><span class="tag ${r.dados.assinatura_digital?'PASS':'FALSO'}">${r.dados.assinatura_digital?'PASS':'MISSING'}</span></td></tr>
+            <tr><td data-i18n="cIban">${t('cIban')}</td><td><span class="tag ${ibanPass?'PASS':'FALSO'}">${ibanPass?t('tPass'):t('tFail')}</span></td></tr>
+            <tr><td data-i18n="cAmount">${t('cAmount')}</td><td><span class="tag ${amtPass?'PASS':'FALSO'}">${amtPass?t('tPass'):t('tDiverge')}</span></td></tr>
+            <tr><td data-i18n="cDigital">${t('cDigital')}</td><td><span class="tag ${r.dados.assinatura_digital?'PASS':'FALSO'}">${r.dados.assinatura_digital?t('tPass'):t('tMissing')}</span></td></tr>
         `;
 
-        // Sinais
         const sf = document.getElementById('v-fraudes');
         if(r.sinais_fraude.length === 0) {
-            sf.innerHTML = '<div style="color:var(--green)">Nenhum sinal detectado.</div>';
+            sf.innerHTML = `<div style="color:var(--green)">${t('msgNoFraud')}</div>`;
         } else {
             sf.innerHTML = r.sinais_fraude.map(s => `<div style="margin-bottom:8px; font-size:13px;"><span class="tag ${s.nivel}">${s.nivel}</span> ${s.descricao}</div>`).join('');
         }
 
-        // Campos Editados
         const ce = document.getElementById('v-campos');
-        ce.innerHTML = r.campos_editados.map(c => `<tr><td>${c.campo}</td><td><span class="tag ${c.status}">${c.status}</span></td></tr>`).join('');
+        ce.innerHTML = r.campos_editados.map(c => `<tr><td>${c.campo}</td><td><span class="tag ${c.status}">${translateTag(c.status)}</span></td></tr>`).join('');
 
         document.getElementById('v-resumo').textContent = r.resumo;
-
-        // Blacklist button logic
         document.getElementById('btn-add-blacklist').style.display = r.veredicto === 'FALSO' ? 'block' : 'none';
+        
+        // Ensure translations are applied on render
+        document.getElementById('v-title').textContent = transVerdict(r.veredicto);
     }
 
     function shareWa() {
         if(!currentReport) return;
         const r = currentReport;
-        const text = `*VeriFundu detectou: ${r.veredicto}* 🚨\nBanco: ${r.banco_detectado}\nMontante: ${r.dados.montante}\nIBAN: ${r.beneficiario.iban_masked}\nScore Confiança: ${r.score}/100`;
+        const text = `*VeriFundu detectou: ${transVerdict(r.veredicto)}* 🚨\nBanco: ${r.banco_detectado}\nMontante: ${r.dados.montante}\nIBAN: ${r.beneficiario.iban_masked}\nScore: ${r.score}/100`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
 
     function closeVerdict(){
         document.getElementById('verdict').style.display= 'none';
-        
-        // Reset Scan view
         document.getElementById('upload-msg').style.display = 'block';
         document.getElementById('preview-img').style.display = 'none';
         document.getElementById('heatmap-layer').style.display = 'none';
         document.getElementById('status-log').style.display = 'none';
         document.getElementById('filein').value = '';
-        
         nav('home');
     }
 
-    /* HISTORY RENDER */
     function renderHistory() {
         const hl = document.getElementById('history-list');
-        if(historyData.length === 0) {
-            hl.innerHTML = '<p style="color:#666; text-align:center;">Sem verificações...</p>';
-            return;
-        }
+        if(historyData.length === 0) { hl.innerHTML = `<p style="color:#666; text-align:center;">${t('noHistory')}</p>`; return; }
         
         hl.innerHTML = historyData.map((h, i) => `
             <div class="card" onclick="openHistoryItem(${i})" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
@@ -608,16 +703,15 @@
                     <div style="font-size:12px; color:#6b9cd4;">${h.dados?.montante || 'N/A'} • ${h.beneficiario?.iban_masked || ''}</div>
                     <div style="font-size:10px; color:#888; margin-top:4px;">${new Date(h.date).toLocaleString()}</div>
                 </div>
-                <div class="score-circle" style="width:40px; height:40px; font-size:14px; border-width:3px; border-color:${h.veredicto==='AUTÊNTICO'?'var(--green)':h.veredicto==='SUSPEITO'?'var(--orange)':'var(--red)'}; color:${h.veredicto==='AUTÊNTICO'?'var(--green)':h.veredicto==='SUSPEITO'?'var(--orange)':'var(--red)'}">${h.score}</div>
+                <div class="score-circle" style="width:40px; height:40px; font-size:14px; border-width:3px; background:var(--bg); border-color:${h.veredicto==='AUTÊNTICO'?'var(--green)':h.veredicto==='SUSPEITO'?'var(--orange)':'var(--red)'}; color:${h.veredicto==='AUTÊNTICO'?'var(--green)':h.veredicto==='SUSPEITO'?'var(--orange)':'var(--red)'}">${h.score}</div>
             </div>
         `).join('');
     }
 
-    function openHistoryItem(idx) {
-        currentReport = historyData[idx];
-        renderOverlay(currentReport);
-    }
+    function openHistoryItem(idx) { currentReport = historyData[idx]; renderOverlay(currentReport); }
 
+    /* INIT */
+    updateLanguageUI();
     nav('home');
 </script>
 </body>
