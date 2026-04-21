@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VeriFundu — Fraude Bancária</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    </script>
     <style>
         :root {
             --bg: #0a1628;
@@ -115,7 +119,7 @@
         <h2>Bem-vindo ao VeriFundu.</h2>
         <div class="card">
             <h3 style="color:var(--accent); margin-top:0;">Deteção Forense de Fraudes</h3>
-            <p style="font-size:14px; line-height:1.4;">Analisa recibos BAI, BFA, BIC e MULTICAIXA Express em tempo real usando ELA (Error Level Analysis), Metadados EXIF e IA (Anthropic).</p>
+            <p style="font-size:14px; line-height:1.4;">Analisa recibos BAI, BFA, BIC e MULTICAIXA Express em tempo real usando ELA (Error Level Analysis), Metadados EXIF e Inteligência Artificial.</p>
         </div>
         <div style="display:flex; gap:10px;">
             <div class="card" style="flex:1; text-align:center;">
@@ -137,12 +141,12 @@
         <div class="upload-area" id="dropzone">
             <div id="upload-msg" style="text-align:center;">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                <p>Clique ou arraste ficheiro<br><small>JPG / PNG suportados</small></p>
+                <p>Clique ou arraste ficheiro<br><small>JPG / PNG / PDF suportado</small></p>
             </div>
             <img id="preview-img" alt="Preview">
             <canvas id="heatmap-layer"></canvas>
             <div class="laser" id="laser"></div>
-            <input type="file" id="filein" accept="image/jpeg, image/png">
+            <input type="file" id="filein" accept="image/jpeg, image/png, application/pdf">
         </div>
         
         <div id="status-log" style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--accent); height:120px; overflow-y:auto; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; display:none;"></div>
@@ -158,8 +162,8 @@
     <div id="scr-settings" class="screen">
         <h2 style="margin-top:0;">Definições</h2>
         <div class="card">
-            <label style="font-size:12px; color:#6b9cd4;">Anthropic API Key (Claude 3.5)</label>
-            <input type="password" id="api-key" class="input-field" placeholder="sk-ant-...">
+            <label style="font-size:12px; color:#6b9cd4;">Google Gemini API Key</label>
+            <input type="password" id="api-key" class="input-field" placeholder="AIzaSy...">
             <button class="btn" onclick="saveKey()" style="min-height:36px; font-size:14px;">Guardar Key</button>
         </div>
         
@@ -274,10 +278,10 @@
     /* SETTINGS DATA */
     function saveKey() {
         const k = document.getElementById('api-key').value;
-        if(k) { localStorage.setItem('anthropic_key', k); showToast("Key guardada!", "var(--green)"); }
+        if(k) { localStorage.setItem('gemini_key', k); showToast("Key guardada!", "var(--green)"); }
     }
     function renderSettings() {
-        const k = localStorage.getItem('anthropic_key');
+        const k = localStorage.getItem('gemini_key');
         if(k) document.getElementById('api-key').value = "********";
         
         const bList = document.getElementById('blacklist-list');
@@ -315,19 +319,39 @@
         sel.scrollTop = sel.scrollHeight;
     }
 
+    /* PDF CONVERSION */
+    async function convertPdfToBase64(file) {
+        log("A converter PDF para imagem...");
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        return canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+    }
+
     async function startPipeline(file) {
-        const key = localStorage.getItem('anthropic_key');
+        const key = localStorage.getItem('gemini_key');
         if(!key) return showToast("Falta a API Key nas Definições.");
 
-        // Show image
+        // Prepare UI
         document.getElementById('upload-msg').style.display = 'none';
         const pImg = document.getElementById('preview-img');
         const hCanvas = document.getElementById('heatmap-layer');
         pImg.style.display = 'block';
-        pImg.src = URL.createObjectURL(file);
         
         document.getElementById('status-log').innerHTML = '';
         log("Ficheiro carregado: " + file.name);
+
+        if (file.type === 'application/pdf') {
+            pImg.src = 'data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%230a1628"/><text x="50" y="50" fill="%2300d4ff" font-family="Arial" font-size="20" text-anchor="middle" dominant-baseline="middle">A carregar PDF...</text></svg>';
+        } else {
+            pImg.src = URL.createObjectURL(file);
+        }
         
         setTimeout(async () => {
             document.getElementById('laser').style.display = 'block';
@@ -341,14 +365,20 @@
             log("Analisando Metadados (EXIF/Headers)...");
             const hasExifFraud = await checkExif(file);
 
-            // 3. Convert to Base64 for Claude Vision
-            log("A invocar Inteligência Artificial (Claude 3.5)...");
-            const b64 = await fileToBase64(file);
+            // 3. Convert to Base64 for Gemini Vision
+            log("Extraindo imagem base64...");
+            let b64 = "";
+            if (file.type === 'application/pdf') {
+                b64 = await convertPdfToBase64(file);
+                pImg.src = "data:image/jpeg;base64," + b64;
+            } else {
+                b64 = await fileToBase64(file);
+            }
 
-            // 4. Claude Request
+            log("A invocar Inteligência Artificial (Google Gemini 1.5 Flash)...");
             try {
-                const claudeResult = await callClaudeAPI(b64, key, hasExifFraud);
-                processClaudeResult(claudeResult);
+                const geminiResult = await callGeminiAPI(b64, key, hasExifFraud);
+                processResult(geminiResult);
             } catch (err) {
                 log("<span style='color:red'>Erro na API: " + err.message + "</span>");
                 document.getElementById('laser').style.display = 'none';
@@ -392,48 +422,44 @@
         });
     }
 
-    /* ANTHROPIC CLAUDE INTEGRATION */
-    async function callClaudeAPI(base64Image, key, hasExifFraud) {
-        const sysPrompt = "You are a skeptical forensic fraud expert for Angolan bank receipts (BAI, BFA, BIC, Millennium, MULTICAIXA Express). Assume fraud until proven otherwise. NEVER return AUTÊNTICO unless every single check passes perfectly. Check: font inconsistency across fields, pixel artifacts around numbers, alignment errors, duplicate footer, IBAN format AO06 followed by EXACTLY 21 digits, amount manipulation signs, weekday logic, missing digital signature noreply@mcxexpress.co.ao, transaction number format 8 digits for BAI, background variance. Respond only in valid JSON exactly in this format without markup wrappers: {\"veredicto\":\"AUTÊNTICO|FALSO|SUSPEITO\", \"banco_detectado\":\"str\", \"beneficiario\":{\"nome\":\"str\", \"iban_masked\":\"str\", \"banco\":\"str\", \"tipo_conta\":\"str\"}, \"dados\":{\"data\":\"str\", \"montante\":\"str\", \"total\":\"str\", \"transaccao\":\"str\", \"assinatura_digital\":true|false}, \"campos_editados\":[{\"campo\":\"str\", \"status\":\"ORIGINAL|EDITADO|SUSPEITO\", \"motivo\":\"str\"}], \"sinais_fraude\":[{\"nivel\":\"ALTO|MEDIO|BAIXO\", \"descricao\":\"str\"}], \"pontos_positivos\":[\"str\"], \"resumo\":\"str\"}";
+    /* GOOGLE GEMINI INTEGRATION */
+    async function callGeminiAPI(base64Image, key, hasExifFraud) {
+        const sysPrompt = "You are a skeptical forensic fraud expert for Angolan bank receipts (BAI, BFA, BIC, Millennium, MULTICAIXA Express). Assume fraud until proven otherwise. NEVER return AUTÊNTICO unless every single check passes perfectly. Check: font inconsistency across fields, pixel artifacts around numbers, alignment errors, duplicate footer, IBAN format AO06 followed by EXACTLY 21 digits, amount manipulation signs, weekday logic, missing digital signature noreply@mcxexpress.co.ao, transaction number format 8 digits for BAI, background variance. Respond only in valid JSON exactly in this format without markdown wrappers: {\"veredicto\":\"AUTÊNTICO|FALSO|SUSPEITO\", \"banco_detectado\":\"str\", \"beneficiario\":{\"nome\":\"str\", \"iban_masked\":\"str\", \"banco\":\"str\", \"tipo_conta\":\"str\"}, \"dados\":{\"data\":\"str\", \"montante\":\"str\", \"total\":\"str\", \"transaccao\":\"str\", \"assinatura_digital\":true|false}, \"campos_editados\":[{\"campo\":\"str\", \"status\":\"ORIGINAL|EDITADO|SUSPEITO\", \"motivo\":\"str\"}], \"sinais_fraude\":[{\"nivel\":\"ALTO|MEDIO|BAIXO\", \"descricao\":\"str\"}], \"pontos_positivos\":[\"str\"], \"resumo\":\"str\"}";
 
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        const payload = {
+            systemInstruction: { parts: [{ text: sysPrompt }] },
+            contents: [{
+                parts: [
+                    { text: `Analyze this Angolan bank receipt. Additional system context: EXIF manipulation detected by host = ${hasExifFraud}. Format output as strict JSON.` },
+                    { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+                ]
+            }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
+        };
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
             method: 'POST',
-            headers: {
-                'x-api-key': key,
-                'anthropic-version': '2023-06-01',
-                // Explicitly allow browser execution (cors issue mitigation)
-                'anthropic-dangerously-allow-browser': 'true',
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: "claude-3-5-sonnet-20241022",
-                max_tokens: 1500,
-                system: sysPrompt,
-                messages: [{
-                    role: "user",
-                    content: [
-                        { type: "text", text: `Analyze this Angolan bank receipt. Additional system context: EXIF manipulation detected by host = ${hasExifFraud}. Format output as strict JSON.` },
-                        { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64Image } }
-                    ]
-                }]
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
             const errBody = await response.text();
-            throw new Error(`HTTP ${response.status}: ${errBody}`);
+            throw new Error(errBody);
         }
 
         const data = await response.json();
-        let rawText = data.content[0].text;
+        let rawText = data.candidates[0].content.parts[0].text;
         
-        // Clean JSON formatting if Claude added markdown codeblocks
+        // Clean JSON formatting if Gemini added markdown codeblocks despite responseMimeType
         rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(rawText);
     }
 
     /* SCORING PROCESSOR */
-    function processClaudeResult(res) {
+    function processResult(res) {
         log("Processamento concluído. A calcular pontuação...");
         document.getElementById('laser').style.display = 'none';
 
